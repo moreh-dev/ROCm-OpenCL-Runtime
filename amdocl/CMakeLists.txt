@@ -67,6 +67,8 @@ else()
   set_target_properties(amdocl PROPERTIES OUTPUT_NAME "amdocl32")
 endif()
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__HIP_PLATFORM_AMD__")
+
 target_sources(amdocl PRIVATE
   cl_command.cpp
   cl_context.cpp
@@ -91,7 +93,21 @@ target_sources(amdocl PRIVATE
   cl_sampler.cpp
   cl_sdi_amd.cpp
   cl_svm.cpp
-  cl_thread_trace_amd.cpp)
+  cl_thread_trace_amd.cpp
+
+  hip_moreh.cpp
+  hip_global.cpp
+  hip_platform.cpp
+  hip_device_runtime.cpp
+  hip_fatbin.cpp
+  hip_code_object.cpp
+  hip_module.cpp
+  hip_memory.cpp
+  hip_hmm.cpp
+  hip_peer.cpp
+  hip_event.cpp
+  hip_event_ipc.cpp
+  hip_error.cpp)
 
 if(BUILD_SHARED_LIBS)
   if(WIN32)
