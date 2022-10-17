@@ -173,6 +173,11 @@ RUNTIME_ENTRY_RET(cl_command_queue, clCreateCommandQueueWithProperties,
     }
   }
 
+  if (!(properties & CL_QUEUE_ON_DEVICE)) {
+    amd::ScopedLock lock(amdDevice.queueLock());
+    amdDevice.addHostQueue(static_cast<amd::HostQueue*>(queue));
+  }
+
   if (amd::Agent::shouldPostCommandQueueEvents()) {
     amd::Agent::postCommandQueueCreate(as_cl(queue->asCommandQueue()));
   }
@@ -281,6 +286,13 @@ RUNTIME_ENTRY(cl_int, clReleaseCommandQueue, (cl_command_queue command_queue)) {
   if (!is_valid(command_queue)) {
     return CL_INVALID_COMMAND_QUEUE;
   }
+
+  amd::Device& device = as_amd(command_queue)->device();
+  {
+    amd::ScopedLock lock(device.queueLock());
+    device.removeHostQueue(as_amd(command_queue)->asHostQueue());
+  }
+
   as_amd(command_queue)->release();
   return CL_SUCCESS;
 }
