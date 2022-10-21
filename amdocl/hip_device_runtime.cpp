@@ -39,7 +39,7 @@ hipError_t hipChooseDevice(int* device, const hipDeviceProp_t* properties) {
     hipDeviceProp_t currentProp = {0};
     cl_uint validPropCount = 0;
     cl_uint matchedCount = 0;
-    hipError_t err = hipGetDeviceProperties(&currentProp, i);
+    hipError_t err = ihipGetDeviceProperties(&currentProp, i);
     if (properties->major != 0) {
       validPropCount++;
       if(currentProp.major >= properties->major) {
@@ -152,7 +152,7 @@ hipError_t hipDeviceGetAttribute(int* pi, hipDeviceAttribute_t attr, int device)
 
   //FIXME: should we cache the props, or just select from deviceHandle->info_?
   hipDeviceProp_t prop = {0};
-  hipError_t err = hipGetDeviceProperties(&prop, device);
+  hipError_t err = ihipGetDeviceProperties(&prop, device);
   if (err != hipSuccess) {
     HIP_RETURN(err);
   }
@@ -321,6 +321,9 @@ hipError_t hipDeviceGetAttribute(int* pi, hipDeviceAttribute_t attr, int device)
   case hipDeviceAttributeImageSupport:
     *pi = static_cast<int>(g_devices[device]->devices()[0]->info().imageSupport_);
     break;
+  case hipDeviceAttributePhysicalMultiProcessorCount:
+    *pi = g_devices[device]->devices()[0]->info().maxPhysicalComputeUnits_;
+    break;
   default:
     HIP_RETURN(hipErrorInvalidValue);
   }
@@ -340,14 +343,16 @@ hipError_t hipDeviceGetByPCIBusId(int* device, const char*pciBusIdstr) {
   int pciDeviceID = -1;
   int pciDomainID = -1;
   bool found = false;
-  if (sscanf (pciBusIdstr, "%04x:%02x:%02x", &pciDomainID, &pciBusID, &pciDeviceID) == 0x3) {
+  if (sscanf (pciBusIdstr, "%04x:%02x:%02x", reinterpret_cast<unsigned int*>(&pciDomainID),
+              reinterpret_cast<unsigned int*>(&pciBusID),
+              reinterpret_cast<unsigned int*>(&pciDeviceID)) == 0x3) {
     int count = 0;
     ihipDeviceGetCount(&count);
     for (cl_int i = 0; i < count; i++) {
       hipDevice_t dev;
-      hipDeviceGet(&dev, i);
+      ihipDeviceGet(&dev, i);
       hipDeviceProp_t prop;
-      hipGetDeviceProperties(&prop, dev);
+      ihipGetDeviceProperties(&prop, dev);
 
       if ((pciBusID == prop.pciBusID) && (pciDomainID == prop.pciDomainID)
                     && (pciDeviceID == prop.pciDeviceID)) {
@@ -385,7 +390,7 @@ hipError_t hipDeviceGetLimit ( size_t* pValue, hipLimit_t limit ) {
   }
   if(limit == hipLimitMallocHeapSize) {
     hipDeviceProp_t prop;
-    hipGetDeviceProperties(&prop, ihipGetDevice());
+    ihipGetDeviceProperties(&prop, ihipGetDevice());
 
     *pValue = prop.totalGlobalMem;
     HIP_RETURN(hipSuccess);
@@ -409,7 +414,7 @@ hipError_t hipDeviceGetPCIBusId ( char* pciBusId, int  len, int  device ) {
   }
 
   hipDeviceProp_t prop;
-  hipGetDeviceProperties(&prop, device);
+  ihipGetDeviceProperties(&prop, device);
 
   snprintf (pciBusId, len, "%04x:%02x:%02x.0",
                     prop.pciDomainID,

@@ -324,10 +324,9 @@ hipError_t ihipLaunchKernelCommand(amd::Command*& command, hipFunction_t f,
   size_t localWorkSize[3] = {blockDimX, blockDimY, blockDimZ};
   amd::NDRangeContainer ndrange(3, globalWorkOffset, globalWorkSize, localWorkSize);
   amd::Command::EventWaitList waitList;
-  bool profileNDRange = false;
   address kernargs = nullptr;
 
-  profileNDRange = (startEvent != nullptr || stopEvent != nullptr);
+  bool profileNDRange = (startEvent != nullptr || stopEvent != nullptr);
 
   // Flag set to 1 signifies that kernel can be launched in anyorder
   if (flags & hipExtAnyOrderLaunch) {
@@ -517,6 +516,10 @@ hipError_t hipLaunchCooperativeKernel(const void* f,
 {
   HIP_INIT_API(hipLaunchCooperativeKernel, f, gridDim, blockDim,
                sharedMemBytes, hStream);
+
+  if (!hip::isValid(hStream)) {
+    HIP_RETURN(hipErrorInvalidValue);
+  }
 
   hipFunction_t func = nullptr;
   int deviceId = hip::Stream::DeviceId(hStream);

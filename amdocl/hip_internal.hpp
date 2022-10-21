@@ -80,7 +80,9 @@ extern volatile bool initialized_;
 inline bool initialized() { return initialized_; }
 };
 
-static amd::Monitor g_hipInitlock{"hipInit lock"};
+const char* ihipGetErrorName(hipError_t hip_error);
+
+static  amd::Monitor g_hipInitlock{"hipInit lock"};
 #define HIP_INIT() {\
     amd::ScopedLock lock(g_hipInitlock);                     \
     if (!hip::initialized()) {                               \
@@ -105,13 +107,14 @@ static amd::Monitor g_hipInitlock{"hipInit lock"};
     }                                                        \
   }
 
+
 #define HIP_API_PRINT(...)                                 \
   uint64_t startTimeUs=0 ; HIPPrintDuration(amd::LOG_INFO, amd::LOG_API, &startTimeUs, "%s%s ( %s )%s", KGRN,    \
           __func__, ToString( __VA_ARGS__ ).c_str(),KNRM);
 
 #define HIP_ERROR_PRINT(err, ...)                                                  \
   ClPrint(amd::LOG_INFO, amd::LOG_API, "%s: Returned %s : %s",                     \
-          __func__, hipGetErrorName(err), ToString( __VA_ARGS__ ).c_str());
+          __func__, ihipGetErrorName(err), ToString( __VA_ARGS__ ).c_str());
 
 #define HIP_INIT_API_NO_RETURN(cid, ...)		     \
   HIP_API_PRINT(__VA_ARGS__)                                 \
@@ -131,7 +134,7 @@ static amd::Monitor g_hipInitlock{"hipInit lock"};
   hip::g_lastError = ret;                                    \
   HIPPrintDuration(amd::LOG_INFO, amd::LOG_API, &startTimeUs,                      \
                    "%s: Returned %s : %s",                                         \
-                   __func__, hipGetErrorName(hip::g_lastError),                    \
+                   __func__, ihipGetErrorName(hip::g_lastError),                    \
                    ToString( __VA_ARGS__ ).c_str());                               \
   return hip::g_lastError;
 
@@ -298,6 +301,8 @@ namespace hip {
 //    }
 //    /// Get Capture ID
 //    int GetCaptureID() { return captureID_; }
+//    void SetCaptureEvent(hipEvent_t e) { captureEvents_.push_back(e); }
+//    void SetParallelCaptureStream(hipStream_t s) { parallelCaptureStreams_.push_back(s); }
   };
 
   /// HIP Device class
@@ -392,7 +397,7 @@ namespace hip {
   /// Get ROCclr queue associated with hipStream
   /// Note: This follows the CUDA spec to sync with default streams
   ///       and Blocking streams
-  extern amd::HostQueue* getQueue(hipStream_t s);
+  extern amd::HostQueue* getQueue(hipStream_t stream);
   /// Get default stream associated with the ROCclr context
   extern amd::HostQueue* getNullStream(amd::Context&);
   /// Get default stream of the thread
@@ -425,6 +430,10 @@ extern amd::Memory* getMemoryObject(const void* ptr, size_t& offset);
 extern amd::Memory* getMemoryObjectWithOffset(const void* ptr, const size_t size);
 //extern void getStreamPerThread(hipStream_t& stream);
 extern hipError_t ihipUnbindTexture(textureReference* texRef);
+
+extern hipError_t ihipGetDeviceProperties(hipDeviceProp_t* props, hipDevice_t device);
+
+extern hipError_t ihipDeviceGet(hipDevice_t* device, int deviceId);
 
 constexpr bool kOptionChangeable = true;
 constexpr bool kNewDevProg = false;
