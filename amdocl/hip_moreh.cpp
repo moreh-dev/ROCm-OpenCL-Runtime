@@ -253,7 +253,7 @@ hipError_t hipDriverGetVersion(int* driverVersion) {
     HIP_RETURN(hipErrorInvalidValue);
   }
 
-  *driverVersion = 50013601;
+  *driverVersion = 50120531;
 
   HIP_RETURN(hipSuccess);
 }
