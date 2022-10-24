@@ -39,8 +39,6 @@ thread_local hipError_t g_lastError = hipSuccess;
 Device* host_device = nullptr;
 volatile bool initialized_ = false;
 
-hipError_t ihipFree(void* ptr);
-
 /// MOREH_COPIED_UNTOUCHED
 Device* getCurrentDevice() {
   return g_device;
@@ -615,7 +613,7 @@ hipError_t hipStreamWaitEvent(hipStream_t stream, hipEvent_t event, unsigned int
 ///////////////////////////////////////////////////////////////////////////////
 // Memory Management
 ///////////////////////////////////////////////////////////////////////////////
-;
+hipError_t ihipFree(void* ptr);
 ///////////////////////////////////////////////////////////////////////////////
 
 
