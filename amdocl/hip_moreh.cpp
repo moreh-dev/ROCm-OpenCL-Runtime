@@ -454,46 +454,8 @@ void CL_CALLBACK ihipStreamCallback(cl_event event, cl_int command_exec_status, 
   delete cbo;
 }
 
-/// MOREH_COPIED_TOUCHED
-hipError_t hipStreamCreate(hipStream_t *stream) {
-  HIP_INIT_API(hipStreamCreate, stream);
-
-  if (stream == nullptr) {
-    HIP_RETURN(hipErrorInvalidValue);
-  }
-
-  amd::Context& context = *hip::getCurrentDevice()->asContext();
-  amd::Device& device = *context.devices()[0];
-
-  cl_command_queue_properties properties =
-    HIP_FORCE_QUEUE_PROFILING ? CL_QUEUE_PROFILING_ENABLE : 0;
-  const std::vector<uint32_t> cuMask = {};
-
-  amd::HostQueue* queue = new amd::HostQueue(context, device, properties,
-      amd::CommandQueue::RealTimeDisabled,
-      amd::CommandQueue::Priority::Normal, cuMask);
-
-  bool result = (queue != nullptr) ? queue->create() : false;
-  if (result) {
-    amd::ScopedLock lock(device.queueLock());
-    device.addHostQueue(queue);
-  } else if (queue != nullptr) {
-    queue->release();
-    delete queue;
-    HIP_RETURN(hipErrorOutOfMemory);
-  }
-
-  *stream = reinterpret_cast<hipStream_t>(as_cl(queue));
-  HIP_RETURN(hipSuccess);
-}
-
-hipError_t hipStreamCreateWithFlags(hipStream_t *stream, unsigned int flags) {
-  HIP_INIT_API(hipStreamCreateWithFlags, stream, flags);
-
-  if (stream == nullptr) {
-    HIP_RETURN(hipErrorInvalidValue);
-  }
-
+hipError_t ihipStreamCreate(hipStream_t* stream, unsigned int flags,
+    const std::vector<uint32_t>& cuMask = {}) {
   if (flags != hipStreamDefault && flags != hipStreamNonBlocking) {
     return hipErrorInvalidValue;
   }
@@ -503,7 +465,6 @@ hipError_t hipStreamCreateWithFlags(hipStream_t *stream, unsigned int flags) {
 
   cl_command_queue_properties properties =
     HIP_FORCE_QUEUE_PROFILING ? CL_QUEUE_PROFILING_ENABLE : 0;
-  const std::vector<uint32_t> cuMask = {};
 
   amd::HostQueue* queue = new amd::HostQueue(context, device, properties,
       amd::CommandQueue::RealTimeDisabled,
@@ -516,11 +477,51 @@ hipError_t hipStreamCreateWithFlags(hipStream_t *stream, unsigned int flags) {
   } else if (queue != nullptr) {
     queue->release();
     delete queue;
-    HIP_RETURN(hipErrorOutOfMemory);
+    return hipErrorOutOfMemory;
   }
 
   *stream = reinterpret_cast<hipStream_t>(as_cl(queue));
-  HIP_RETURN(hipSuccess);
+
+  return hipSuccess;
+}
+
+/// MOREH_COPIED_TOUCHED
+hipError_t hipStreamCreate(hipStream_t *stream) {
+  HIP_INIT_API(hipStreamCreate, stream);
+
+  if (stream == nullptr) {
+    HIP_RETURN(hipErrorInvalidValue);
+  }
+
+  HIP_RETURN(ihipStreamCreate(stream, hipStreamDefault), *stream);
+}
+
+/// MOREH_COPIED_TOUCHED
+hipError_t hipStreamCreateWithFlags(hipStream_t *stream, unsigned int flags) {
+  HIP_INIT_API(hipStreamCreateWithFlags, stream, flags);
+
+  if (stream == nullptr) {
+    HIP_RETURN(hipErrorInvalidValue);
+  }
+
+  HIP_RETURN(ihipStreamCreate(stream, flags), *stream);
+}
+
+/// MOREH_COPIED_TOUCHED
+hipError_t hipExtStreamCreateWithCUMask(hipStream_t* stream, uint32_t cuMaskSize,
+                                        const uint32_t* cuMask) {
+  HIP_INIT_API(hipExtStreamCreateWithCUMask, stream, cuMaskSize, cuMask);
+
+  if (stream == nullptr) {
+    HIP_RETURN(hipErrorInvalidHandle);
+  }
+  if (cuMaskSize == 0 || cuMask == nullptr) {
+    HIP_RETURN(hipErrorInvalidValue);
+  }
+
+  const std::vector<uint32_t> cuMaskv(cuMask, cuMask + cuMaskSize);
+
+  HIP_RETURN(ihipStreamCreate(stream, hipStreamDefault, cuMaskv), *stream);
 }
 
 /// MOREH_COPIED_TOUCHED

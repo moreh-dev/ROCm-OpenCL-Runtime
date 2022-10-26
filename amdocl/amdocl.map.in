@@ -307,6 +307,7 @@ global:
 
     hipStreamCreate;
     hipStreamCreateWithFlags;
+    hipExtStreamCreateWithCUMask;
     hipStreamDestroy;
     hipStreamQuery;
     hipStreamSynchronize;
