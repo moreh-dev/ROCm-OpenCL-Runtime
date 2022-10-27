@@ -121,6 +121,11 @@ if(BUILD_SHARED_LIBS)
   endif()
 endif()
 
+if(__HIP_ENABLE_PCH)
+  # TODO
+  target_compile_definitions(amdocl PRIVATE __HIP_ENABLE_PCH)
+endif()
+
 target_link_libraries(amdocl PUBLIC rocclr)
 
 INSTALL(TARGETS amdocl

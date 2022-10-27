@@ -19,11 +19,8 @@ size_t amd_dbgapi_get_build_id() {
 }
 
 #ifdef __HIP_ENABLE_PCH
-extern const char __hip_pch[];
-extern unsigned __hip_pch_size;
 void __hipGetPCH(const char** pch, unsigned int *size) {
-  *pch = __hip_pch;
-  *size = __hip_pch_size;
+  LogPrintfError("hipGetPCH is currently not supported\n", 0);
 }
 #endif
 namespace hip {
