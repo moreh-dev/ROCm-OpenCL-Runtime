@@ -86,7 +86,7 @@ static  amd::Monitor g_hipInitlock{"hipInit lock"};
 #define HIP_INIT() {\
     amd::ScopedLock lock(g_hipInitlock);                     \
     if (!hip::initialized()) {                               \
-      if (!hipInit(0)) {                                     \
+      if (hipInit(0) != hipSuccess) {                        \
         HIP_RETURN(hipErrorInvalidDevice);                   \
       }                                                      \
     }                                                        \
