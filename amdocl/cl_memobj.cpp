@@ -3049,10 +3049,12 @@ RUNTIME_ENTRY_RET(void*, clEnqueueMapBuffer,
   }
   amd::HostQueue& hostQueue = *queue;
 
-  if (hostQueue.context() != srcBuffer->getContext()) {
-    *not_null(errcode_ret) = CL_INVALID_CONTEXT;
-    return NULL;
-  }
+  // MOREH: temporaily disable context check
+  // using hipHostMalloc + clCreateBuffer + clEnqueueMapBuffer causes error
+  //if (hostQueue.context() != srcBuffer->getContext()) {
+  //  *not_null(errcode_ret) = CL_INVALID_CONTEXT;
+  //  return NULL;
+  //}
 
   if ((srcBuffer->getMemFlags() & (CL_MEM_HOST_WRITE_ONLY | CL_MEM_HOST_NO_ACCESS)) &&
       (map_flags & CL_MAP_READ)) {
