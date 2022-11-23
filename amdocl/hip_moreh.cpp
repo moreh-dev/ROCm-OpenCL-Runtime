@@ -113,10 +113,19 @@ hipError_t hipInit(unsigned int flags) {
   if (hip::initialized())
     return hipSuccess;
 
-  printf("Initializing HIP environment for Moreh OpenCL\n");
+  time_t time_now;
+  time_now = time(NULL);
+  struct tm tm_local = *localtime(&time_now);
+
+  printf("[%d-%d-%d %d:%d:%d] Initializing Moreh HIP/OpenCL Runtime (version: %s)\n",
+      tm_local.tm_year+1900, tm_local.tm_mon+1, tm_local.tm_mday,
+      tm_local.tm_hour, tm_local.tm_min, tm_local.tm_sec,
+      MOREH_GIT_VERSION);
 
   if (!amd::Runtime::initialized()) {
-    printf("hipInit should be called after initializing OpenCL environment!\n");
+    printf("[%d-%d-%d %d:%d:%d] hipInit should be called after initializing OpenCL environment!\n",
+        tm_local.tm_year+1900, tm_local.tm_mon+1, tm_local.tm_mday,
+        tm_local.tm_hour, tm_local.tm_min, tm_local.tm_sec);
     exit(0);
   }
 

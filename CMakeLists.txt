@@ -13,6 +13,13 @@ option(BUILD_TESTS "Enable building OpenCL tests" OFF)
 option(EMU_ENV "Enable building for emulation environment" OFF)
 option(__HIP_ENABLE_PCH "Enable/Disable pre-compiled hip headers" ON)
 
+# get moreh git version
+execute_process(COMMAND
+  git describe --dirty --always --tags
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  OUTPUT_VARIABLE MOREH_GIT_VERSION
+  ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+add_definitions("-DMOREH_GIT_VERSION=\"${MOREH_GIT_VERSION}\"")
 
 set(OPENCL_ICD_LOADER_HEADERS_DIR "${CMAKE_CURRENT_LIST_DIR}/khronos/headers/opencl2.2" CACHE PATH "")
 add_subdirectory(khronos/icd)
