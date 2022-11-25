@@ -69,6 +69,13 @@ endif()
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__HIP_PLATFORM_AMD__")
 
+# Short-Term solution for pre-compiled headers for online compilation
+# Enable pre compiled header
+if(__HIP_ENABLE_PCH)
+  target_compile_definitions(amdocl PRIVATE __HIP_ENABLE_PCH)
+  target_sources(amdocl PRIVATE hip_pch.o)
+endif()
+
 target_sources(amdocl PRIVATE
   cl_command.cpp
   cl_context.cpp
