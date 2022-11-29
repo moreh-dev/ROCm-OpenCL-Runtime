@@ -19,6 +19,7 @@
  THE SOFTWARE. */
 
 #include <hip/hip_runtime.h>
+#include <spdlog/spdlog.h>
 #include "platform/object.hpp"
 #include "platform/runtime.hpp"
 #include "platform/sampler.hpp"
@@ -113,19 +114,11 @@ hipError_t hipInit(unsigned int flags) {
   if (hip::initialized())
     return hipSuccess;
 
-  time_t time_now;
-  time_now = time(NULL);
-  struct tm tm_local = *localtime(&time_now);
-
-  printf("[%d-%d-%d %d:%d:%d] Initializing Moreh HIP/OpenCL Runtime (version: %s)\n",
-      tm_local.tm_year+1900, tm_local.tm_mon+1, tm_local.tm_mday,
-      tm_local.tm_hour, tm_local.tm_min, tm_local.tm_sec,
+  spdlog::info("Initializing Moreh HIP/OpenCL Runtime (version: {})",
       MOREH_GIT_VERSION);
 
   if (!amd::Runtime::initialized()) {
-    printf("[%d-%d-%d %d:%d:%d] hipInit should be called after initializing OpenCL environment!\n",
-        tm_local.tm_year+1900, tm_local.tm_mon+1, tm_local.tm_mday,
-        tm_local.tm_hour, tm_local.tm_min, tm_local.tm_sec);
+    spdlog::info("hipInit should be called after initializing OpenCL runtime!");
     exit(0);
   }
 
