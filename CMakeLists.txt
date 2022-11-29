@@ -21,6 +21,9 @@ execute_process(COMMAND
   ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 add_definitions("-DMOREH_GIT_VERSION=\"${MOREH_GIT_VERSION}\"")
 
+# spdlog
+include_directories(${CMAKE_SOURCE_DIR}/spdlog)
+
 set(OPENCL_ICD_LOADER_HEADERS_DIR "${CMAKE_CURRENT_LIST_DIR}/khronos/headers/opencl2.2" CACHE PATH "")
 add_subdirectory(khronos/icd)
 add_subdirectory(amdocl)
