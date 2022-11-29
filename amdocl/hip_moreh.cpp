@@ -114,7 +114,7 @@ hipError_t hipInit(unsigned int flags) {
   if (hip::initialized())
     return hipSuccess;
 
-  spdlog::info("Initializing Moreh HIP/OpenCL Runtime (version: {})",
+  spdlog::info("Initializing Moreh OpenCL/HIP Runtime (version: {})",
       MOREH_GIT_VERSION);
 
   if (!amd::Runtime::initialized()) {
