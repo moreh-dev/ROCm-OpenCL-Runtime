@@ -118,7 +118,7 @@ hipError_t hipInit(unsigned int flags) {
       MOREH_GIT_VERSION);
 
   if (!amd::Runtime::initialized()) {
-    spdlog::info("hipInit should be called after initializing OpenCL runtime!");
+    spdlog::error("hipInit should be called after initializing OpenCL runtime!");
     exit(0);
   }
 
