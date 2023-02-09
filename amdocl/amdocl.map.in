@@ -212,3 +212,256 @@ global:
     aclGetDeviceBinary;
     aclDumpBinary;
 };
+
+hip_4.2 {
+global:
+    hipCtxCreate;
+    hipCtxDestroy;
+    hipCtxGetCurrent;
+    hipCtxPopCurrent;
+    hipCtxPushCurrent;
+    hipCtxSetCurrent;
+    hipCtxEnablePeerAccess;
+    hipCtxDisablePeerAccess;
+    hipChooseDevice;
+    hipDriverGetVersion;
+    hipDeviceGetCacheConfig;
+    hipDeviceGetLimit;
+    hipDeviceGetSharedMemConfig;
+    hipDeviceSetCacheConfig;
+    hipDeviceSetLimit;
+    hipDeviceSetSharedMemConfig;
+    hipDeviceGet;
+    hipDeviceGetAttribute;
+    hipDeviceTotalMem;
+    hipDeviceGetByPCIBusId;
+    hipDeviceGetPCIBusId;
+    hipDeviceGetP2PAttribute;
+    hipDeviceCanAccessPeer;
+    hipDeviceDisablePeerAccess;
+    hipDeviceEnablePeerAccess;
+    hipDeviceReset;
+    hipDeviceSynchronize;
+    hipSetDevice;
+    hipGetDevice;
+    hipGetDeviceCount;
+    hipGetDeviceProperties;
+    hipGetDeviceFlags;
+    hipSetDeviceFlags;
+    hipSetValidDevices;
+    hipGetErrorName;
+    hipGetErrorString;
+    hipGetLastError;
+    hipPeekAtLastError;
+
+    hipInit;
+    hipMalloc;
+    hipMallocManaged;
+    hipExtMallocWithFlags;
+    hipHostMalloc;
+    hipMemAdvise;
+    hipMemset;
+    hipMemsetAsync;
+    hipFree;
+    hipHostFree;
+    hipFreeArray;
+    hipMemGetAddressRange;
+    hipMemGetInfo;
+    hipPointerGetAttributes;
+    hipMallocHost;
+    hipFreeHost;
+    hipMallocPitch;
+    hipMalloc3D;
+    hipArrayCreate;
+    hipMallocArray;
+    hipArrayDestroy;
+    hipArray3DCreate;
+    hipMalloc3DArray;
+    hipHostGetFlags;
+    hipHostRegister;
+    hipHostUnregister;
+    hipHostAlloc;
+    hipHostGetDevicePointer;
+    hipMemcpy;
+    hipMemcpyAsync;
+    hipMemcpyWithStream;
+    hipMemcpyToSymbol;
+    hipMemcpyFromSymbol;
+    hipMemcpyToSymbolAsync;
+    hipMemcpyFromSymbolAsync;
+    hipMemcpyParam2D;
+    hipMemcpy2D;
+    hipMemcpy2DAsync;
+    hipMemcpy2DToArray;
+    hipMemcpyToArray;
+    hipMemcpyFromArray;
+    hipMemcpy3D;
+    hipMemcpy3DAsync;
+    hipMemcpyPeer;
+    hipMemcpyPeerAsync;
+    hipMemGetInfo;
+    hipMemPtrGetInfo;
+    hipMemPrefetchAsync;
+    hipMemRangeGetAttribute;
+    hipMemRangeGetAttributes;
+
+    hipStreamCreate;
+    hipStreamCreateWithFlags;
+    hipExtStreamCreateWithCUMask;
+    hipStreamDestroy;
+    hipStreamQuery;
+    hipStreamSynchronize;
+    hipStreamWaitEvent;
+    hipStreamAttachMemAsync;
+
+    __hipPopCallConfiguration;
+    __hipPushCallConfiguration;
+    __hipRegisterFatBinary;
+    __hipRegisterFunction;
+    __hipRegisterVar;
+    __hipRegisterSurface;
+    __hipRegisterTexture;
+    __hipRegisterManagedVar;
+    __hipUnregisterFatBinary;
+    hipFuncSetAttribute;
+    hipFuncSetCacheConfig;
+    hipFuncSetSharedMemConfig;
+    hipGetSymbolAddress;
+    hipGetSymbolSize;
+    hipModuleGetFunction;
+    hipModuleGetGlobal;
+    hipModuleGetTexRef;
+    hipModuleLaunchKernel;
+    hipModuleLaunchKernelExt;
+    hipLaunchCooperativeKernel;
+    hipLaunchCooperativeKernelMultiDevice;
+    hipModuleLoad;
+    hipModuleLoadData;
+    hipModuleLoadDataEx;
+    hipModuleUnload;
+    hipModuleOccupancyMaxPotentialBlockSize;
+    hipModuleOccupancyMaxPotentialBlockSizeWithFlags;
+    hipModuleOccupancyMaxActiveBlocksPerMultiprocessor;
+    hipModuleOccupancyMaxActiveBlocksPerMultiprocessorWithFlags;
+    hipOccupancyMaxPotentialBlockSize;
+    hipOccupancyMaxActiveBlocksPerMultiprocessor;
+    hipOccupancyMaxActiveBlocksPerMultiprocessorWithFlags;
+    hipFuncGetAttribute;
+    hipFuncGetAttributes;
+    hipConfigureCall;
+    hipSetupArgument;
+    hipLaunchByPtr;
+    hipLaunchKernel;
+
+    hipEventCreate;
+    hipEventCreateWithFlags;
+    hipEventDestroy;
+    hipEventElapsedTime;
+    hipEventQuery;
+    hipEventRecord;
+    hipEventSynchronize;
+    hipExtLaunchMultiKernelMultiDevice;
+    hipExtLaunchKernel;
+    hipExtGetLinkTypeAndHopCount;
+
+    hipImportExternalMemory;
+    hipExternalMemoryGetMappedBuffer;
+    hipDestroyExternalMemory;
+    hipImportExternalSemaphore;
+    hipSignalExternalSemaphoresAsync;
+    hipWaitExternalSemaphoresAsync;
+    hipDestroyExternalSemaphore;
+
+    hipIpcOpenMemHandle;
+    hipIpcCloseMemHandle;
+    hipIpcGetMemHandle;
+    __hipGetPCH;
+
+    __gnu_h2f_ieee;
+    __gnu_f2h_ieee;
+
+    hiprtcCompileProgram;
+    hiprtcCreateProgram;
+    hiprtcDestroyProgram;
+    hiprtcGetLoweredName;
+    hiprtcGetProgramLog;
+    hiprtcGetProgramLogSize;
+    hiprtcGetCode;
+    hiprtcGetCodeSize;
+    hiprtcGetErrorString;
+    hiprtcAddNameExpression;
+    hiprtcVersion;
+    hiprtcLinkCreate;
+    hiprtcLinkAddFile;
+    hiprtcLinkAddData;
+    hiprtcLinkComplete;
+    hiprtcLinkDestroy;
+
+    extern "C++" {
+    hipHccModuleLaunchKernel*;
+    hipExtModuleLaunchKernel*;
+    };
+local:
+    *;
+};
+
+hip_4.3 {
+} hip_4.2;
+
+hip_4.4 {
+global:
+    hipStreamWaitValue32;
+    hipStreamWaitValue64;
+    hipStreamWriteValue32;
+    hipStreamWriteValue64;
+local:
+    *;
+} hip_4.3;
+
+hip_4.5 {
+global:
+    hipStreamGetCaptureInfo;
+    hipStreamGetCaptureInfo_v2;
+local:
+    *;
+} hip_4.4;
+
+hip_5.0 {
+global:
+    hipPointerGetAttribute;
+    hipDrvPointerGetAttributes;
+local:
+    *;
+} hip_4.5;
+
+hip_5.1 {
+global:
+    hipDeviceGetUuid;
+    hipDeviceGetDefaultMemPool;
+    hipDeviceSetMemPool;
+    hipDeviceGetMemPool;
+    hipMallocAsync;
+    hipFreeAsync;
+    hipMemPoolTrimTo;
+    hipMemPoolSetAttribute;
+    hipMemPoolGetAttribute;
+    hipMemPoolSetAccess;
+    hipMemPoolGetAccess;
+    hipMemPoolCreate;
+    hipMemPoolDestroy;
+    hipMallocFromPoolAsync;
+    hipMemPoolExportToShareableHandle;
+    hipMemPoolImportFromShareableHandle;
+    hipMemPoolExportPointer;
+    hipMemPoolImportPointer;
+local:
+    *;
+} hip_5.0;
+
+hip_5.3 {
+global:
+    hiprtcGetBitcode;
+    hiprtcGetBitcodeSize;
+local:
+    *;
+} hip_5.0;

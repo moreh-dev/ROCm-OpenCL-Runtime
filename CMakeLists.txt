@@ -18,7 +18,15 @@ option(BUILD_TESTS "Enable building OpenCL tests" OFF)
 option(BUILD_ICD "Enable building OpenCL ICD Loader" ON)
 option(EMU_ENV "Enable building for emulation environment" OFF)
 option(FILE_REORG_BACKWARD_COMPATIBILITY "Enable File Reorganization backward compatibility" ON)
+option(__HIP_ENABLE_PCH "Enable/Disable pre-compiled hip headers" ON)
 
+# get moreh git version
+execute_process(COMMAND
+  git describe --dirty --always --tags
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  OUTPUT_VARIABLE MOREH_GIT_VERSION
+  ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+add_definitions("-DMOREH_GIT_VERSION=\"${MOREH_GIT_VERSION}\"")
 
 # spdlog
 include_directories(${CMAKE_SOURCE_DIR}/spdlog)

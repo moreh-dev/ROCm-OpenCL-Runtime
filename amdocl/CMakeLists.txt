@@ -68,6 +68,68 @@ else()
   set_target_properties(amdocl PROPERTIES OUTPUT_NAME "amdocl32")
 endif()
 
+################################################################################
+# Moreh OpenCL/HIP Runtime configuration
+################################################################################
+set(HIP_COMMON_INCLUDE_DIR ${ROCM_PATH}/include)
+set(__HIPCONFIG_EXECUTABLE__ ${ROCM_PATH}/bin/hipconfig)
+
+# Short-Term solution for pre-compiled headers for online compilation
+# Enable pre compiled header
+if(__HIP_ENABLE_PCH)
+  target_compile_definitions(amdocl PRIVATE __HIP_ENABLE_PCH)
+  target_sources(amdocl PRIVATE hip_pch.o)
+endif()
+
+target_compile_definitions(amdocl PRIVATE __HIP_PLATFORM_AMD__)
+
+find_package(Perl REQUIRED)
+
+# Determine HIP_BASE_VERSION
+set(ENV{HIP_PATH} "")
+execute_process(COMMAND ${PERL_EXECUTABLE} ${__HIPCONFIG_EXECUTABLE__} --version
+  OUTPUT_VARIABLE HIP_BASE_VERSION
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REPLACE "." ";" VERSION_LIST ${HIP_BASE_VERSION})
+list(GET VERSION_LIST 0 HIP_VERSION_MAJOR)
+list(GET VERSION_LIST 1 HIP_VERSION_MINOR)
+list(GET VERSION_LIST 2 HIP_VERSION_PATCH_GITHASH)
+string(REPLACE "-" ";" VERSION_LIST ${HIP_VERSION_PATCH_GITHASH})
+list(GET VERSION_LIST 0 HIP_VERSION_PATCH)
+set(HIP_VERSION_GITDATE 0)
+
+macro(add_to_config _configfile _variable)
+    set(${_configfile} "${${_configfile}}${_variable}=${${_variable}}\n")
+endmacro()
+
+set (HIP_LIB_VERSION_MAJOR ${HIP_VERSION_MAJOR})
+set (HIP_LIB_VERSION_MINOR ${HIP_VERSION_MINOR})
+if (${ROCM_PATCH_VERSION} )
+   set (HIP_LIB_VERSION_PATCH ${ROCM_PATCH_VERSION})
+elseif (DEFINED HIP_VERSION_GITHASH)
+   set (HIP_LIB_VERSION_PATCH ${HIP_VERSION_PATCH}-${HIP_VERSION_GITHASH})
+else ()
+   set (HIP_LIB_VERSION_PATCH ${HIP_VERSION_PATCH})
+endif ()
+set (HIP_LIB_VERSION_STRING "${HIP_LIB_VERSION_MAJOR}.${HIP_LIB_VERSION_MINOR}.${HIP_LIB_VERSION_PATCH}")
+
+set(HIPRTC_OBJECTS)
+# Add hiprtc
+add_subdirectory(hiprtc)
+
+if(NOT WIN32)
+  if(BUILD_SHARED_LIBS)
+    target_link_libraries(amdocl PRIVATE ${HIPRTC_OBJECTS})
+    target_compile_definitions(amdocl PRIVATE __HIP_ENABLE_RTC)
+    add_dependencies(amdocl hiprtc-builtins)
+    INSTALL(TARGETS hiprtc-builtins
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  endif()
+endif()
+################################################################################
+
 target_sources(amdocl PRIVATE
   cl_command.cpp
   cl_context.cpp
@@ -92,7 +154,25 @@ target_sources(amdocl PRIVATE
   cl_sampler.cpp
   cl_sdi_amd.cpp
   cl_svm.cpp
-  cl_thread_trace_amd.cpp)
+  cl_thread_trace_amd.cpp
+
+  hip_code_object.cpp
+  hip_device.cpp
+  hip_device_runtime.cpp
+  hip_error.cpp
+  hip_event.cpp
+  hip_event_ipc.cpp
+  hip_fatbin.cpp
+  hip_global.cpp
+  hip_hmm.cpp
+  hip_memory.cpp
+  hip_mempool.cpp
+  hip_mempool_impl.cpp
+  hip_module.cpp
+  hip_moreh.cpp
+  hip_peer.cpp
+  hip_platform.cpp
+  hip_stream_ops.cpp)
 
 if(WIN32)
   target_sources(amdocl PRIVATE
