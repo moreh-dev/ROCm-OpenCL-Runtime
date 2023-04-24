@@ -325,6 +325,25 @@ RUNTIME_EXIT
  *
  *  \version 1.0r33
  */
+static inline cl_int
+GetNumCommandsInQueue(
+    cl_command_queue command_queue,
+    void* value_ret)
+{
+  if (!is_valid(command_queue)) {
+    return CL_INVALID_COMMAND_QUEUE;
+  }
+
+  amd::HostQueue* hostQueue = as_amd(command_queue)->asHostQueue();
+  if (NULL == hostQueue) {
+    return CL_INVALID_COMMAND_QUEUE;
+  }
+
+  (*reinterpret_cast<uint64_t*>(value_ret)) = hostQueue->vdev()->GetNumCommandsInQueue();
+
+  return CL_SUCCESS;
+}
+
 RUNTIME_ENTRY(cl_int, clGetCommandQueueInfo,
               (cl_command_queue command_queue, cl_command_queue_info param_name,
                size_t param_value_size, void* param_value, size_t* param_value_size_ret)) {
@@ -370,6 +389,9 @@ RUNTIME_ENTRY(cl_int, clGetCommandQueueInfo,
       amd::CommandQueue* defQueue = as_amd(command_queue)->context().defDeviceQueue(device);
       cl_command_queue queue = defQueue ? as_cl(defQueue) : NULL;
       return amd::clGetInfo(queue, param_value_size, param_value, param_value_size_ret);
+    }
+    case CL_QUEUE_REFERENCE_COUNT+7 /*0x1099*/: {
+      return GetNumCommandsInQueue(command_queue, param_value);
     }
     default:
       break;
